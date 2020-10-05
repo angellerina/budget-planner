@@ -1,7 +1,7 @@
 const dims = { height: 300, width: 300, radius: 150 };
 const cent = { x: dims.width / 2 + 5, y: dims.height / 2 + 5 };
 
-// SVG Container
+// create svg container
 const svg = d3
   .select(".canvas")
   .append("svg")
@@ -10,23 +10,50 @@ const svg = d3
 
 const graph = svg
   .append("g")
-  .attr("transform", `translate(%{cent.x}, ${cent.y})`);
+  .attr("transform", `translate(${cent.x}, ${cent.y})`);
+// translates the graph group to the middle of the svg container
 
-//  Returns a a fucntion that generates start and end angles data in an array
 const pie = d3
   .pie()
   .sort(null)
   .value((d) => d.cost);
-
-const angles = pie([
-  { name: "rent", cost: 750 },
-  { name: "food", cost: 300 },
-  { name: "gaming", cost: 200 },
-]);
+// the value we are evaluating to create the pie angles
 
 const arcPath = d3
   .arc()
   .outerRadius(dims.radius)
   .innerRadius(dims.radius / 2);
 
-console.log(arcPath(angles[0]));
+// update function
+const update = (data) => {
+  console.log(data);
+};
+
+// data array and firestore
+var data = [];
+
+db.collection("expenses")
+  .orderBy("cost")
+  .onSnapshot((res) => {
+    res.docChanges().forEach((change) => {
+      const doc = { ...change.doc.data(), id: change.doc.id };
+
+      switch (change.type) {
+        case "added":
+          data.push(doc);
+          break;
+        case "modified":
+          const index = data.findIndex((item) => item.id == doc.id);
+          data[index] = doc;
+          break;
+        case "removed":
+          data = data.filter((item) => item.id !== doc.id);
+          break;
+        default:
+          break;
+      }
+    });
+
+    // call the update function
+    update(data);
+  });

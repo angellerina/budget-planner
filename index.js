@@ -20,6 +20,6 @@ form.addEventListener("submit", (e) => {
         cost.value = "";
       });
   } else {
-    error.textContent = "Please enter value before submitting.";
+    error.textContent = "Please enter values before submitting";
   }
 });
