@@ -12,7 +12,7 @@ const graph = svg
   .append("g")
   .attr("transform", `translate(%{cent.x}, ${cent.y})`);
 
-//  Returns a a fucntion that generates angles
+//  Returns a a fucntion that generates start and end angles data in an array
 const pie = d3
   .pie()
   .sort(null)
@@ -23,3 +23,10 @@ const angles = pie([
   { name: "food", cost: 300 },
   { name: "gaming", cost: 200 },
 ]);
+
+const arcPath = d3
+  .arc()
+  .outerRadius(dims.radius)
+  .innerRadius(dims.radius / 2);
+
+console.log(arcPath(angles[0]));
